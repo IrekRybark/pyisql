@@ -4,6 +4,7 @@ import pandas as pd
 
 import pyisql as ps
 
+# config provides database access parameters - replace with your local information
 CONFIG_FILE_NAME = "../../../OpenSource.secret/pyisql/db.cfg"
 
 class TestPyISQL(unittest.TestCase):
@@ -71,6 +72,17 @@ class TestPyISQL(unittest.TestCase):
         self.instance.pwd = "incorrect-password"
         with self.assertRaises(ValueError):
             self.instance.exec_query(sql)
+
+    def test_incorrect_password(self):
+        sql = """
+create table #temp (id int,  name varchar(10))
+insert into #temp values(1, 'one')
+insert into #temp values(2, 'two')
+insert into #temp values(3, 'three')
+select * from #temp
+            """
+        df = self.instance.exec_query(sql)
+        self.assertEqual(len(df), 3, 'expected 3 rows')
 
 if __name__ == "__main__":
     unittest.main()
