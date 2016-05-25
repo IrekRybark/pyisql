@@ -5,7 +5,8 @@ The current implementation loads the resultset into Pandas DataFrame
 
 ## 1. Purpose
 
-The class purpose is to provide a wrapper for Sybase isql command line tool.
+The class purpose is to provide a wrapper for Sybase isql command line tool.  
+In the latest verstions of ASE, Sybase provides Python bindings, which effectively replace PyISQL.
 
 ## 2. How it works
 
