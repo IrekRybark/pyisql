@@ -1,0 +1,11 @@
+# pyCharm
+.idea/
+
+temp/
+dist/
+docs/build/
+pyisql/__pycache__
+pyisql.egg-info/
+
+*.bak
+*.pyc
