@@ -1,6 +1,7 @@
 import unittest
 import configparser
 import pandas as pd
+import numpy as np
 
 import pyisql as ps
 
@@ -73,9 +74,9 @@ class TestPyISQL(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.instance.exec_query(sql)
 
-    def test_incorrect_password(self):
+    def test_three_rows_two_columns(self):
         sql = """
-create table #temp (id int,  name varchar(10))
+create table #temp (recid int,  name varchar(10))
 insert into #temp values(1, 'one')
 insert into #temp values(2, 'two')
 insert into #temp values(3, 'three')
@@ -83,6 +84,19 @@ select * from #temp
             """
         df = self.instance.exec_query(sql)
         self.assertEqual(len(df), 3, 'expected 3 rows')
+
+    def test_three_rows_two_columns_with_nulls(self):
+        sql = """
+create table #temp (recid int null,  name varchar(10) null)
+insert into #temp values(1, null)
+insert into #temp values(null, 'two')
+insert into #temp values(3, 'three')
+select * from #temp
+            """
+        df = self.instance.exec_query(sql)
+        self.assertEqual(len(df), 3, 'expected 3 rows')
+        self.assertTrue(np.isnan(df.name[0]), 'expected NaN')
+        self.assertTrue(np.isnan(df.recid[1]), 'expected NaN')
 
 if __name__ == "__main__":
     unittest.main()
