@@ -1,0 +1,6 @@
+2016-05-24  v.0.1.1
+    Initial release
+    
+2016-06-28  v.0.1.2
+    SQL execution time recording added
+    

@@ -1,10 +1,11 @@
 import os
 import pandas as pd
+import datetime as dt
 
 
 class PyISQL:
     """ Quick and dirty wrapper for Sybase isql command line application.
-        Loads the resultset into Pandas DataFrame
+        Loads the resultset into Pandas DataFrame.
     """
 
     def __init__(self, host, user, pwd, sql_file_name='select.sql', out_file_name='select_out.txt'):
@@ -13,6 +14,8 @@ class PyISQL:
         self.pwd = pwd
         self.sql_file_name = sql_file_name
         self.out_file_name = out_file_name
+        self.exec_beg_time = None
+        self.exec_end_time = None
     
 #    def __del__(self):
 #        os.remove(self.sql_file_name)
@@ -24,8 +27,11 @@ class PyISQL:
 
         isql_conn = self._isql_param_connect(self.host, self.user, self.pwd)
         isql_files = self._isql_param_files(self.sql_file_name, self.out_file_name)
+        
+        self.exec_beg_time = dt.datetime.now()
         self._isql_exec(isql_conn, isql_files)
-
+        self.exec_end_time = dt.datetime.now()
+        
         return self._isql_output_to_df(self.out_file_name)
 
     def _make_sql(self, sql):
@@ -76,7 +82,7 @@ go
                     for num, line in enumerate(text_file):
                         err_msg += line
                         if num >= 10:
-                            break
+                            break  # don't go crazy with message length
                     raise ValueError(''.join(['Error processing resultset. [', err_msg, ']']))
 
             colnames = list(filter(None, columns.split(" ")))

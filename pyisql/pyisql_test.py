@@ -20,6 +20,7 @@ class TestPyISQL(unittest.TestCase):
         df = self.instance.exec_query(sql)
         self.assertEqual(len(df), 1, 'expected 1 row')
         self.assertEqual(len(df.columns), 1, 'expected 1 column')
+        self.assertEqual(df[0][0], 1, 'expected field value 1')
 
     def test_one_row_one_column_query(self):
         sql = "select 1 as col1"
@@ -27,7 +28,7 @@ class TestPyISQL(unittest.TestCase):
         self.assertEqual(len(df), 1, 'expected 1 row')
         self.assertEqual(len(df.columns), 1, 'expected 1 column')
         self.assertEqual(df.columns[0], 'col1', 'expected column name col1')
-        self.assertEqual(df['col1'][0], 1, 'expected field value 1')
+        self.assertEqual(df.col1[0], 1, 'expected field value 1')
 
     def test_zero_rows_one_column_query(self):
         sql = "select 1 as col1 where 1=2"
@@ -43,8 +44,8 @@ class TestPyISQL(unittest.TestCase):
         self.assertEqual(len(df.columns), 2, 'expected 2 columns')
         self.assertEqual(df.columns[0], 'col1', 'expected column name col1')
         self.assertEqual(df.columns[1], 'col2', 'expected column name col2')
-        self.assertEqual(df['col1'][0], 1, 'expected field value 1')
-        self.assertEqual(df['col2'][0], 'a', 'expected field value 1')
+        self.assertEqual(df.col1[0], 1, 'expected field value 1')
+        self.assertEqual(df.col2[0], 'a', 'expected field value 1')
 
     def test_empty_query(self):
         sql = ""
@@ -97,6 +98,33 @@ select * from #temp
         self.assertEqual(len(df), 3, 'expected 3 rows')
         self.assertTrue(np.isnan(df.name[0]), 'expected NaN')
         self.assertTrue(np.isnan(df.recid[1]), 'expected NaN')
+
+    def test_two_consecutive_queries(self):
+        sql = "select 1"
+        df = self.instance.exec_query(sql)
+        self.assertEqual(len(df), 1, 'expected 1 row')
+        self.assertEqual(len(df.columns), 1, 'expected 1 column')
+        self.assertEqual(df[0][0], 1, 'expected vaule 1')
+        sql = "select 2"
+        df = self.instance.exec_query(sql)
+        self.assertEqual(len(df), 1, 'expected 1 row')
+        self.assertEqual(len(df.columns), 1, 'expected 1 column')
+        self.assertEqual(df[0][0], 2, 'expected vaule 2')
+
+    @unittest.skip("Unable to handle multiple resultsets.")
+    def test_two_resultsets(self):
+        sql = """
+create table #temp (recid int,  name varchar(10))
+insert into #temp values(1, 'one')
+insert into #temp values(2, 'two')
+insert into #temp values(3, 'three')
+select * from #temp
+set rowcount 1
+select * from #temp
+            """
+        df = self.instance.exec_query(sql)
+        print('\n', df)
+        self.assertEqual(len(df), 3, 'expected 3 rows')
 
 if __name__ == "__main__":
     unittest.main()

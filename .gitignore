@@ -3,6 +3,7 @@
 
 temp/
 dist/
+build/
 docs/build/
 pyisql/__pycache__
 pyisql.egg-info/
